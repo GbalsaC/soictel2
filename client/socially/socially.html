@@ -1,0 +1,49 @@
+<md-toolbar md-scroll-shrink layout="row" layout-align="start center" layout-padding>
+  <h2>
+    <md-button ng-click="socially.openLeftMenu()">
+      <i class="material-icons">view_headline</i>
+    </md-button>
+    <a ui-sref="products"><span class="md-title">Soictel</span></a>
+  </h2>
+  <span flex></span>
+</md-toolbar>
+<div layout="row">
+  <!-- Start Sidenav -->
+  <md-sidenav md-component-id="left" class="md-sidenav-left">
+    <md-subheader>
+      <div ng-show="socially.isLoggedIn">{{ socially.currentUser | displayName }}</div>
+      <md-button ng-href="/login" ng-hide="socially.isLoggedIn">Login</md-button>
+      <md-button ng-href="/register" ng-hide="socially.isLoggedIn">Sign up</md-button>
+      <md-button ng-click="socially.logout()" ng-show="socially.isLoggedIn" class="menuBotton">
+        <i class="material-icons">exit_to_app</i>Logout
+      </md-button>
+
+    </md-subheader>
+    <md-divider></md-divider>
+    <!-- ENABLE ONCE QUICK SEARCH IS FUNCTIONAL
+    <form>
+      <md-input-container>
+        <label for="testInput">Test input</label>
+        <input id="testInput" type="text" ng-model="data" md-autofocus>
+      </md-input-container>
+    </form>
+
+    -->
+    <div flex="90" flex-offset="5">
+      <a ui-sref="products" style="text-decoration: none;">
+        <h3>Soictel</h3>
+      </a>
+    </div>
+    <md-list>
+      <md-list-item class="md-2-line" ng-repeat="options in socially.menuOptions">
+        <div class="md-list-item-text">
+          <md-button ui-sref="{{options.state}}" class="menuBotton">
+            <i class="material-icons">{{options.icon}}</i>
+            {{options.title}}
+          </md-button>
+        </div>
+      </md-list-item>
+    </md-list>
+  </md-sidenav>
+</div>
+<div ui-view flex-gt-sm layout-gt-sm="row"></div>

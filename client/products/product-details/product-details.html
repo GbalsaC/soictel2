@@ -1,0 +1,45 @@
+<div layout="row" flex class="ma-product-details">
+  <div flex="33" offset="33">
+    <legend style="margin:20px 0;">
+      Here you will see and change the details of the product:
+    </legend>
+    <form layout="column">
+      <md-input-container>
+        <label>Product Name</label>
+        <input ng-model="productDetails.product.name" ng-disabled="productDetails.product.owner != productDetails.currentUserId" type="text" aria-label="Name">
+      </md-input-container>
+      <md-input-container>
+        <label>Product Description</label>
+        <input ng-model="productDetails.product.description" ng-disabled="productDetails.product.owner != productDetails.currentUserId" type="text" aria-label="Description">
+      </md-input-container>
+      <md-checkbox ng-model="productDetails.product.public" ng-disabled="productDetails.product.owner != productDetails.currentUserId" aria-label="Public">
+        Is public
+      </md-checkbox>
+
+      <div layout="row" layout-align="left">
+        <md-button ng-show="productDetails.product.owner == productDetails.currentUserId" ng-click="productDetails.save()">Save</md-button>
+        <md-button ng-href="/products">Back</md-button>
+      </div>
+
+      <md-list ng-show="productDetails.canInvite()">
+        <md-subheader class="md-no-sticky">Users to invite:</md-subheader>
+        <md-list-item ng-repeat="user in productDetails.users | uninvited:productDetails.product">
+          <div>{{ user | displayName }}</div>
+          <md-button ng-click="productDetails.invite(user)">Invite</md-button>
+        </md-list-item>
+        <md-list-item ng-if="(productDetails.users | uninvited:productDetails.product).length <= 0">
+          Everyone are already invited.
+        </md-list-item>
+      </md-list>
+
+      <div class="angular-google-map-container">
+        <ui-gmap-google-map center="productDetails.product.location || productDetails.map.center"
+                            events="productDetails.map.events" zoom="productDetails.map.zoom">
+          <ui-gmap-marker coords="productDetails.product.location" options="productDetails.map.marker.options"
+                          events="productDetails.map.marker.events" idkey="productDetails.product._id">
+          </ui-gmap-marker>
+        </ui-gmap-google-map>
+      </div>
+    </form>
+  </div>
+</div>

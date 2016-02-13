@@ -1,0 +1,281 @@
+<md-content flex layout="row" class="ma-products-list">
+  <div layout="row" flex>
+    <div flex="80" flex-offset="10">
+    <!-- SEARCH & VIEW CONTROLLER START -->
+      <div ng-if="productsList.location !='/categories'">
+        <h2>
+          Catálogo de Productos
+        </h2>
+        <div layout-padding layout="row">
+          <md-input-container flex="35" flex-offset="5">
+            <label>Search</label>
+            <input type="text" ng-model="productsList.searchText" placeholder="Search">
+          </md-input-container>
+          <md-select ng-model="productsList.orderBy" placeholder="Ordenar por" md-on-close="productsList.updateSort()" flex="20" flex-offset="5">
+            <md-option value="Nombre">Nombre</md-option>
+            <md-option value="Categoria">Categoría</md-option>
+            <md-option value="Precio">Precio</md-option>
+            <md-option value="Unidad">Unidad</md-option>
+          </md-select>
+          <md-select ng-init="productsList.orderProperty=1" ng-model="productsList.orderProperty" placeholder="En Orden" md-on-close="productsList.updateSort()" flex="20" flex-offset="5">
+            <md-option value="1">Ascendente</md-option>
+            <md-option value="-1">Descendente</md-option>
+          </md-select>
+          <md-button ng-show="productsList.isLoggedIn" class="md-fab" ng-click="productsList.AddNewProduct()">
+            <md-icon md-font-set="material-icons"> add </md-icon>
+          </md-button>
+        </div>
+      </div>
+      <!-- SEARCH & VIEW CONTROLLER END -->
+      <!-- Name/Price/Units VIEW START -->
+      <md-content class="md-padding" style="padding-top:0;" ng-hide="productsList.orderBy=='Categoria'">
+          <md-card>
+            <md-card-content>
+        <div >
+            <md-list>
+              <md-list-item class="headerLine md-2-line ma-product">
+                <div class="md-list-item-text">
+                  <h3>Nombre</h3>
+                </div>
+                <div class="md-list-item-text">
+                  <h3>Categoría > <span class="subcategory">Subcategoría</span></h3>
+                </div>
+                <div class="md-list-item-text">
+                  <h3>Unidades</h3>
+                </div>
+                <div class="md-list-item-text">
+                  <h3>Precio</h3>
+                </div>
+                <md-checkbox></md-checkbox>
+              </md-list-item>
+              <md-divider></md-divider>
+              <md-list-item dir-paginate="product in productsList.products | itemsPerPage: productsList.perPage" total-items="productsList.productsCount" class="md-2-line ma-product">
+                <div class="md-list-item-text">
+                  <h3 class="md-accent"><a>{{product.name}}</a></h3>
+                </div>
+                <div class="md-list-item-text">
+                  <h3>{{product.category}} > <span class="subcategory">{{product.subcategory}}
+                  </span></h3>
+                  
+                </div>
+                <div class="md-list-item-text">
+                  <p>{{product.units}}</p>
+                </div>
+                <div class="md-list-item-text">
+                  <p>{{product.price | currency}}</p>
+                </div>
+                <md-checkbox ng-model="product.done"></md-checkbox>
+              </md-list-item>
+            </md-list>              
+        </div>
+            </md-card-content>
+             <md-card-footer>
+               <dir-pagination-controls on-page-change="productsList.pageChanged(newPageNumber)"></dir-pagination-controls>
+             </md-card-footer>
+          </md-card>
+      </md-content>
+      <!-- Name/Price/Units VIEW END -->
+
+
+      <!-- Category VIEW START -->
+      <md-content class="md-padding" ng-show="productsList.orderBy=='Categoria'" ng-if="productsList.location !='/categories'">
+        <md-card>
+            <md-card-content>
+            <div >
+            <md-list>
+              <div dir-paginate="category in productsList.Categories | itemsPerPage: productsList.perPageCat">
+              <!-- 
+                Since category=='Nueva' hasn't got subcategories other than NUEVA, it's not necessary to filter it out
+               -->
+                <div ng-repeat="subcategory in category.subcategory | filter:{name: '!NUEVA'}" ng-show="productsList.getProductFiltered(subcategory.name).length">
+                <h3>
+                  {{category.name}} <span class="subcategory"> > </span> {{subcategory.name}}
+                </h3>
+
+                  <md-list-item ng-repeat="product in productsList.products | filter:{ subcategory: subcategory.name }" class="md-2-line ma-product">
+                    <div class="md-list-item-text" flex="30">
+                      <h3 class="md-accent"><a>{{product.name}}</a></h3>
+                    </div>
+                    
+                    <div class="md-list-item-text" flex="15" flex-offset="40">
+                      <p>{{product.units}}</p>
+                    </div>
+                    <div class="md-list-item-text" flex="15">
+                      <p>{{product.price | currency}}</p>
+                    </div>
+                    <md-checkbox ng-model="product.done"></md-checkbox>
+                  </md-list-item>
+
+
+                </div>
+
+              </div>
+              
+            </md-list>              
+            </div>
+            </md-card-content>
+             <md-card-footer>
+               <dir-pagination-controls on-page-change="productsList.pageChangedCat(newPageNumber)"></dir-pagination-controls>
+             </md-card-footer>
+          </md-card>
+      </md-content>
+      <!-- Category VIEW END -->
+      <!-- Category Summary VIEW START -->
+      <md-content class="md-padding" ng-show="productsList.orderBy=='Categoria'" ng-if="productsList.location=='/categories'">
+        <md-card>
+            <div flex="90" flex-offset="5">
+              <h2>
+                Categorías de Producto: {{productsList.Categories.length }}              
+              </h2>
+            </div>
+              <md-divider>
+                <md-button class="md-raised md-primary" ng-click="productsList.showAddCategory = true" aria-label="description" md-no-ink="false" ng-hide="productsList.showAddCategory">Nueva Categoría</md-button>
+                <div flex="100" ng-show="productsList.showAddCategory" class="categoryBanner">
+                  <div flex="80" flex-offset="10" layout="row" layout-wrap layout-align="center center">
+                    <div flex="100" layout="row" layout-wrap>
+                      <h3 flex="85">
+                        Nueva Categoría
+                      </h3>
+                      <div flex></div>
+                      <md-button class="" aria-label="Close" ng-click="productsList.showAddCategory = false; productsList.tempCategory = {};" flex>
+                        <i class="material-icons">close</i>
+                      </md-button>
+                      <md-divider></md-divider>
+                    </div>
+                    <div flex="50">
+                      <md-input-container>
+                        <label>Nombre</label>
+                        <input type="text" ng-model="productsList.tempCategory.name">
+                      </md-input-container>
+                      <md-input-container ng-if="productsList.isSubcat">
+                        <label>Categoría a la que pertenece</label>
+                        <input type="text" ng-model="productsList.tempCategory.subcategory">
+                      </md-input-container>
+                      <md-button class="md-raised" ng-click="productsList.addCategory(productsList.tempCategory)">Guardar</md-button>
+                    </div>
+                    <div flex="50">
+                      <md-checkbox ng-init="productsList.isSubcat=false;" ng-model="productsList.isSubcat" name="string" aria-label="string">
+                        Es subcategoría
+                      </md-checkbox>
+
+                    </div>
+                  </div>
+                </div>
+              </md-divider>
+            
+            <md-card-content>
+            <div >
+            <md-list>
+              <div dir-paginate="category in productsList.Categories | itemsPerPage: productsList.perPageCat" flex="100">
+                <md-list-item class="md-2-line ma-product">
+                    <div flex-offset="0" flex="45" class="md-list-item-text">
+                      <h3>
+                        {{category.name}}
+                      </h3>
+                    </div>
+                    <div class="md-list-item-text" flex="15">
+                      {{productsList.getProductFiltered2(category.name).length}} productos
+                    </div>
+                    <div class="md-list-item-text" flex="15">
+                      <h3><span class="subcategory">Categoría</span></h3>
+                    </div>
+                    <div class="md-list-item-text" flex="25">
+                      <h3>Precio</h3>
+                    </div>
+                  </md-list-item>
+              <!-- 
+                Since category=='Nueva' hasn't got subcategories other than NUEVA, it's not necessary to filter it out
+               -->
+                <div ng-repeat="subcategory in category.subcategory | filter:{name: '!NUEVA'}" flex="100">
+                  <md-list-item class="md-2-line ma-product" flex-offset="5" >
+                    <div flex="40" class="md-list-item-text">
+                      <h3>
+                        {{subcategory.name}}
+                      </h3>
+                    </div>
+                    <div class="md-list-item-text" flex="15">
+                      {{productsList.getProductFiltered(subcategory.name).length}} productos
+                    </div>
+                    <div class="md-list-item-text" flex="15">
+                      <h3><span class="subcategory">Sub-categoría</span></h3>
+                    </div>
+                    <div class="md-list-item-text" flex="25">
+                      <h3> </h3>
+                    </div>
+                  </md-list-item>
+                </div>
+              <md-divider md-inset></md-divider>
+              </div>
+              
+            </md-list>              
+            </div>
+            </md-card-content>
+             <md-card-footer>
+               <dir-pagination-controls on-page-change="productsList.pageChangedCat(newPageNumber)"></dir-pagination-controls>
+             </md-card-footer>
+          </md-card>
+      </md-content>
+
+      <!-- Category Summary VIEW END -->
+
+      <md-content class="md-padding" style="padding-top:0;" ng-hide="true">
+        <dir-pagination-controls on-page-change="productsList.pageChanged(newPageNumber)"></dir-pagination-controls>
+        <div dir-paginate="product in productsList.products | itemsPerPage: productsList.perPage" total-items="productsList.productsCount" class="ma-product">
+          <md-card>
+            <div ng-if="product.images && product.images.length > 0"
+                 ng-style="productsList.getMainImage(product.images)"
+                 class="product-image">
+            </div>
+            <md-card-content>
+              <h2 class="md-title ma-name" style=""><a href="/products/{{product._id}}">{{product.name}}</a></h2>
+              <p class="ma-description" style="padding:0 10px;margin-bottom:35px;margin-top: 6px;">{{product.description}}</p>
+              <div layout="row">
+                <div flex="1">
+                  <p style="margin-top:0px;margin-bottom:3px;font-size:14px;color:#aaa;">
+                    <small>Posted by {{ productsList.getProductCreator(product) | displayName }}</small>
+                    <span ng-if="product.public" style="font-size:12px;color:#999;">| Everyone is invited</span>
+                  </p>
+
+                  <div ng-show="productsList.isLoggedIn" class="md-actions" layout="row">
+                    <md-button ng-click="productsList.rsvp(product._id, 'yes')">I'm going!</md-button>
+                    <md-button ng-click="productsList.rsvp(product._id, 'maybe')">Maybe</md-button>
+                    <md-button ng-click="productsList.rsvp(product._id, 'no')">No</md-button>
+                  </div>
+                </div>
+                <div  layout="row" layout-align="end end">
+                  <div ng-hide="productsList.isLoggedIn" style="font-size:13px;margin-bottom:10px;">
+                    Sign in to RSVP for this product
+                  </div>
+                  <div>
+                    <div class="rsvps-sum">
+                      <div class="rsvps-amount">{{ (product.rsvps | filter:{rsvp:'yes'}).length || "0" }}</div>
+                      <div class="rsvps-title">Yes</div>
+                    </div>
+                    <div class="rsvps-sum">
+                      <div class="rsvps-amount">{{ (product.rsvps | filter:{rsvp:'maybe'}).length || "0" }}</div>
+                      <div class="rsvps-title">Maybe</div>
+                    </div>
+                    <div class="rsvps-sum">
+                      <div class="rsvps-amount">{{ (product.rsvps | filter:{rsvp:'no'}).length || "0" }}</div>
+                      <div class="rsvps-title">No</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+
+    </div>
+    <!--
+    <div flex="50" layout="row" style="min-height:300px;">
+      <ui-gmap-google-map options="productsList.map.options" center="productsList.map.center" zoom="productsList.map.zoom" flex layout="row">
+        <ui-gmap-markers models="productsList.products" coords="'location'"
+                         fit="true" idkey="'_id'" doRebuildAll="true">
+        </ui-gmap-markers>
+      </ui-gmap-google-map>
+    </div>
+    -->
+  </div>
+</md-content>

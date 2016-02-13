@@ -1,0 +1,193 @@
+
+<div>
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2> Productos: <b>Añadir un producto nuevo</b> </h2>
+      <span flex></span>
+    </div>
+  </md-toolbar>
+  <div layout="row" flex-offset="10" flex="80" ng-show="addNewProduct.isLoggedIn">
+    <div flex="35" flex-offset="20">
+    <div layout="row">
+      <md-input-container flex>
+        <label>sku</label>
+        <input ng-model="addNewProduct.newProduct.sku" id="skuInput" type="text" aria-label="Name">
+      </md-input-container>
+      <div layour="column" flex="30" flex-offset="5">
+        <md-switch ng-init="isSerial=false" ng-model="isSerial" ng-true-value="true" ng-false-value="false" aria-label="Seriado" flex>
+          Serie
+        </md-switch>
+        <md-switch ng-model="isSerial" ng-true-value="false" ng-false-value="true" aria-label="Lote" flex>
+          Lote
+        </md-switch>
+      </div>
+    </div>
+    <div layout="row">
+      <md-input-container flex>
+        <label>Nombre</label>
+        <input ng-model="addNewProduct.newProduct.name" id="nameInput" type="text" aria-label="Name">
+      </md-input-container>
+      <md-input-container flex="30" flex-offset="5" ng-show="!isSerial">
+        <label>Cantidad</label>
+        <input ng-model="addNewProduct.newProduct.cantidad" id="cantidadInput" type="number" aria-label="Cantidad">
+      </md-input-container>
+    </div>
+      <md-input-container>
+        <label>Descripción corta</label>
+        <input ng-model="addNewProduct.newProduct.shortDescription" id="shortDescription" type="text" aria-label="shortDescription">
+      </md-input-container>
+      <md-input-container>
+        <label>Descripción Larga</label>
+        <input ng-model="addNewProduct.newProduct.longDescription" id="longDescription" type="text" aria-label="longDescription">
+      </md-input-container>
+      <div layout="row">
+        <md-input-container ng-show="addNewProduct.unitBlock.type==1" flex="50">
+          <label>Valor en {{addNewProduct.unitBlock.name}}</label>
+          <input ng-model="addNewProduct.unitBlock.value" type="text" aria-label="blockValue" >
+        </md-input-container>
+        <md-input-container flex>
+          <label>Unidades</label>
+          <md-select ng-model="addNewProduct.unitBlock" placeholder="Seleccione las unidades">
+            <md-option ng-value="unit" ng-repeat="unit in addNewProduct.unidades">{{ unit.name }}</md-option>
+          </md-select>
+        </md-input-container>
+      </div>
+      <md-input-container ng-show="isSerial">
+        <label>Número de serie</label>
+        <input ng-model="addNewProduct.serial" id="serialInput" type="text" aria-label="Serial">
+      </md-input-container>
+      <md-input-container>
+        <label>Código de barras</label>
+        <input ng-model="addNewProduct.newProduct.barcode" id="barcodeInput" type="number" aria-label="Barcode">
+      </md-input-container>
+
+      <br>
+      <br>
+      <div layout="row">  
+        <md-input-container ng-if="addNewProduct.categoryBlock.name=='NUEVA'" flex="50">
+            <label>Nueva Categoria</label>
+            <input ng-model="addNewProduct.newCategory" type="text" aria-label="newCategory" >
+        </md-input-container>
+        <md-input-container flex>
+          <label>Categoría a la que pertenece</label>
+          <md-select ng-model="addNewProduct.categoryBlock" placeholder="Seleccione Categoría">
+              <md-option ng-value="Category" ng-repeat="Category in addNewProduct.Categories">{{ Category.name }}</md-option>
+          </md-select>
+        </md-input-container>
+      </div>
+
+      <div layout="row">
+        <md-input-container ng-if="addNewProduct.categoryBlock.Subname=='NUEVA'" flex="50">
+            <label>Nueva Sub-categoria</label>
+            <input ng-model="addNewProduct.newSubcategory" type="text" aria-label="newCategory" >
+        </md-input-container>
+        <md-input-container flex ng-show="addNewProduct.categoryBlock.name">
+          <label>Sub-Categoría</label>
+          <md-select ng-model="addNewProduct.categoryBlock.Subname" placeholder="Seleccione Sub-categoría">
+              <md-option ng-value="subcategory.name" ng-repeat="subcategory in addNewProduct.categoryBlock.subcategory">{{ subcategory.name }}</md-option>
+          </md-select>
+        </md-input-container>
+      </div>
+      <div layout="row">
+        <md-input-container ng-if="addNewProduct.categoryBlock.Brandname=='NUEVA' && addNewProduct.categoryBlock.name" flex="50">
+            <label>Nueva Marca</label>
+            <input ng-model="addNewProduct.newBrand" type="text" aria-label="newBrand" >
+        </md-input-container>
+        <md-input-container flex ng-show="addNewProduct.categoryBlock.name"> 
+          <label>Marca</label>
+          <md-select ng-model="addNewProduct.categoryBlock.Brandname" placeholder="Seleccione Marca">
+              <md-option ng-value="brand.name" ng-repeat="brand in addNewProduct.Brands">{{ brand.name }}</md-option>
+          </md-select>
+        </md-input-container>
+      </div>
+
+      <br>
+      <br>
+      <md-input-container>
+        <label>Costo</label>
+        <input ng-model="addNewProduct.newProduct.cost" id="costInput" type="number" aria-label="Cost">
+      </md-input-container>
+      <md-input-container>
+        <label>Precio Venta</label>
+        <input ng-model="addNewProduct.newProduct.price" id="priceInput" type="number" aria-label="Price">
+      </md-input-container>
+
+      <div class="row" ng-show="addNewProduct.specialBlock.length">
+        <h3> Parámetros Adicionales </h3>
+        <md-input-container ng-repeat="special in addNewProduct.specialBlock">
+          <label>{{special.name}}</label>
+          <input ng-model="special.value" type="text" aria-label="{{special.name}}">
+        </md-input-container>
+      </div>
+      <div class="row" ng-show="addNewProduct.specialShow">
+        <md-input-container flex="50">
+          <label>Nombre de atributo</label>
+          <input ng-model="addNewProduct.specialTemp.name"  type="text">
+        </md-input-container>
+        <md-input-container flex="50">
+          <label>Valor de atributo</label>
+          <input ng-model="addNewProduct.specialTemp.value" type="text">
+        </md-input-container>
+        <md-button ng-click="addNewProduct.specialShow=false; addNewProduct.newSpecial(addNewProduct.specialTemp)" class="md-raised"> Guardar atributo </md-button>
+      </div>
+
+      <md-button class="md-primary" ng-click="addNewProduct.specialShow=true" ng-hide="addNewProduct.specialShow"> + Añadir un atributo </md-button>
+      <br>
+      <br>
+      <md-button class="md-raised md-primary" ng-click="addNewProduct.addNewProduct()"> Guardar </md-button>
+
+      <md-checkbox ng-model="addNewProduct.newProduct.public" id="public" aria-label="Public">
+        Public
+      </md-checkbox>
+    </div>
+    <div flex="35" flex-offset="10">
+      <div layout="column">
+      <br>
+      <br>
+      <br>
+        <div layout="row" class="images-container-title">
+          <div flex>
+              <div ng-hide="addNewProduct.cropImgSrc" ngf-drop ngf-select
+                   ngf-change="addNewProduct.addImages($files)"
+                   ngf-drag-over-class="{accept:'dragover', reject:'dragover-err', delay:100}" class="drop-box"
+                   ngf-multiple="false" ngf-allow-dir="false" ngf-accept="'image/*'"
+                   ngf-drop-available="true">
+                   <i class="material-icons">photo_camera</i><br>
+                <div><a>Seleccione</a> o arrastre aquí una foto</div>
+                <div>
+                </div>
+                Formato .jpg o .png
+              </div>
+            <h4 style="width: 230px; margin-left: 10px; text-align: center;">Foto o imagen del producto</h4>
+            <div ng-show="addNewProduct.cropImgSrc" class="ng-crop-container">
+              <h3>Great! Now edit & crop your image...</h3>
+              <md-button ng-click="addNewProduct.saveCroppedImage()" ng-disabled="!addNewProduct.cropImgSrc" class="md-primary">
+                Save Image
+              </md-button>
+              <img-crop image="addNewProduct.cropImgSrc" result-image="addNewProduct.myCroppedImage" area-type="square"></img-crop>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div layout="row" class="images-container-title" sv-root sv-part="addNewProduct.newProduct.images">
+          <div sv-element class="product-image-container" ng-repeat="image in addNewProduct.newProduct.images">
+            <div class="main-image" ng-show="$index === 0">Main Image</div>
+            <img draggable="false" ng-src="{{ image.url({store: 'thumbnail'}) }}"/><br/>
+            <a href="#" editable-text="image.metadata.description"
+               onbeforesave="addNewProduct.updateDescription($data, image)">{{ image.metadata.description || 'Click to add description' }}</a>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="md-actions" layout="row">
+    <span flex></span>
+    <md-button ng-click="addNewProduct.close()">
+      Close
+    </md-button>
+    <md-button ng-click="addNewProduct.addNewProduct()" style="margin-right:20px;">
+      Add
+    </md-button>
+  </div>
+</div>
